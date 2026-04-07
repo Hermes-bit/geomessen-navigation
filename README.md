@@ -85,9 +85,9 @@ geomessen-mobilite/
 
 ## Auteur
 
-**Hermès Barry** — Géomaticien / Analyste SIG  
-Formation CQP CPGEOM — IDGEO
+**Hermès Barry** (Chef de Projet en Géomatique)  
+Formation CP CPGEOM — IDGEO
 
 ## Licence
 
-Ce projet est à usage personnel et démonstratif (portfolio).
+Ce projet est à usage personnel et démonstratif.
