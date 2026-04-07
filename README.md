@@ -86,7 +86,7 @@ geomessen-mobilite/
 ## Auteur
 
 **Hermès Barry** (Chef de Projet en Géomatique)  
-Formation CP CPGEOM — IDGEO
+Formation CP GEOM — IDGEO
 
 ## Licence
 
