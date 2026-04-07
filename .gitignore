@@ -1,0 +1,31 @@
+# Clés API (CRITIQUE - ne jamais commiter)
+js/config.js
+
+# Dépendances
+node_modules/
+package-lock.json
+
+# Build
+dist/
+build/
+
+# Environnement
+.env
+.env.local
+.env.production
+
+# Éditeurs
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*

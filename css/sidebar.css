@@ -1,0 +1,378 @@
+/* css/sidebar.css
+   Barre de recherche, résultats, panneau stats, panneau transit
+   ──────────────────────────────────────────────────────────── */
+
+/* ── Recherche ── */
+.search-container {
+  position: absolute;
+  top: calc(85px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 400px;
+  z-index: 1001;
+}
+
+.search-box {
+  background: white;
+  border-radius: 22px;
+  box-shadow: var(--premium-shadow);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #f0f0f0;
+}
+
+.search-main-row { display: flex; align-items: center; width: 100%; }
+.inputs-container { flex-grow: 1; }
+.input-group { display: flex; align-items: center; padding: 4px 12px; gap: 6px; }
+
+.input-group input {
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 8px 5px;
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  color: #333;
+}
+
+.clear-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e8f0fe, #d0e3ff);
+  border: 1px solid #b8d0f5;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.clear-btn:active {
+  transform: scale(0.88);
+  background: linear-gradient(135deg, #d0e3ff, #b8d0f5);
+}
+
+.clear-btn svg { width: 10px; height: 10px; display: block; }
+.input-group input:not(:placeholder-shown) ~ .clear-btn { display: flex; }
+.search-divider { height: 1px; background: #f0f0f0; margin: 0 40px; }
+
+.dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.dot.start { background: #FF3B30; border: 2px solid #fff; }
+.dot.end   { background: #34C759; border: 2px solid #fff; }
+
+.action-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  border-left: 1px solid #f0f0f0;
+  margin-left: 5px;
+}
+
+.btn-static {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid #eee;
+  transition: 0.2s;
+  flex-shrink: 0;
+}
+
+#btn-voice { background: #FF3B30; }
+#btn-voice img { filter: brightness(0) invert(1); }
+#btn-voice.listening { background: #34C759; box-shadow: 0 0 10px #34C759; transform: scale(1.05); }
+#btn-reverse { background: white; }
+
+/* Résultats de recherche */
+.results-list {
+  background: white;
+  border-radius: 18px;
+  margin-top: 10px;
+  max-height: 340px;
+  overflow-y: auto;
+  display: none;
+  box-shadow: var(--premium-shadow);
+  border: 1px solid #f0f0f0;
+  padding: 5px 0;
+}
+
+.result-item {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f5f5f5;
+  cursor: pointer;
+  font-size: 13px;
+  color: #444;
+}
+
+.result-item:active { background-color: #f8f9fa; }
+
+/* Position GPS dans la barre de recherche */
+.gps-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.gps-row-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #888;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+}
+
+.gps-row-change {
+  font-size: 12px;
+  color: var(--accent-blue);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-decoration: underline;
+}
+
+/* ── Panneau Statistiques (bottom-sheet) ── */
+#stats-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 4000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s;
+}
+
+#stats-overlay.show { opacity: 1; visibility: visible; }
+
+#stats-panel {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  z-index: 4001;
+  padding: 0 18px 28px;
+  transform: translateY(100%);
+  transition: transform 0.35s ease;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+#stats-panel.show { transform: translateY(0); }
+
+.stats-handle {
+  width: 36px; height: 4px;
+  border-radius: 2px;
+  background: #ddd;
+  margin: 12px auto 18px;
+}
+
+.stats-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary-blue);
+  margin-bottom: 16px;
+}
+
+.stats-kpi-row { display: flex; gap: 10px; margin-bottom: 20px; }
+
+.kpi-card {
+  flex: 1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #f5f7fa;
+  border: 1px solid #eee;
+}
+
+.kpi-value { font-size: 1.6rem; font-weight: 800; color: var(--primary-blue); line-height: 1; }
+.kpi-label { font-size: 0.75rem; color: #888; margin-top: 4px; }
+
+.chart-section { margin-bottom: 20px; }
+.chart-label { font-size: 0.8rem; font-weight: 600; color: #555; margin-bottom: 8px; }
+.chart-wrapper { position: relative; height: 170px; }
+.chart-wrapper-small { position: relative; height: 130px; }
+.stats-divider { height: 1px; background: #f0f0f0; margin: 0 0 18px; }
+
+.stats-reset-btn {
+  width: 100%;
+  padding: 11px;
+  border: none;
+  border-radius: 10px;
+  background: #f5f5f5;
+  color: #e53935;
+  font-weight: 600;
+  font-size: 0.82rem;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.stats-reset-btn:active { background: #ffe0e0; }
+
+/* ── Panneau Transports en commun ── */
+#transit-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 5000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s;
+}
+
+#transit-overlay.show { opacity: 1; visibility: visible; }
+
+#transit-panel {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  z-index: 5001;
+  padding: 0 16px 30px;
+  transform: translateY(100%);
+  transition: transform 0.35s ease;
+  max-height: 82vh;
+  overflow-y: auto;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+}
+
+#transit-panel.show { transform: translateY(0); }
+
+.transit-handle {
+  width: 36px; height: 4px;
+  border-radius: 2px;
+  background: #ddd;
+  margin: 12px auto 14px;
+}
+
+.transit-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.transit-title { font-size: 1rem; font-weight: 700; color: var(--primary-blue); }
+
+.transit-close {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+}
+
+.transit-loading { text-align: center; padding: 30px; color: #888; font-size: 0.9rem; }
+
+.transit-journey-card {
+  border: 1.5px solid #eee;
+  border-radius: 14px;
+  padding: 13px 14px;
+  margin-bottom: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.transit-journey-card.optimal { border-color: var(--accent-blue); }
+
+.transit-badge {
+  position: absolute;
+  top: -9px; left: 14px;
+  background: var(--accent-blue);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 6px;
+}
+
+.transit-journey-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.transit-time { font-size: 1rem; font-weight: 700; color: #222; }
+.transit-dur  { font-size: 0.85rem; font-weight: 700; color: var(--accent-blue); }
+
+.transit-steps {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.transit-step-line {
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.transit-step-walk {
+  font-size: 11px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.transit-step-arrow { color: #ccc; font-size: 12px; }
+
+.transit-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed #f0f0f0;
+  font-size: 12px;
+  color: #555;
+}
+
+.transit-detail-line {
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.transit-walk-detail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed #f0f0f0;
+  font-size: 12px;
+  color: #888;
+}

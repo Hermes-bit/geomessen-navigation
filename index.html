@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/854/854878.png">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>GÉOMESSEN - Navigation Premium</title>
+
+    <!-- Dépendances externes -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@v10.8.0/dist/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v10.8.0/ol.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Styles découpés -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<!-- Outils carte (zoom / boussole) -->
+<div id="map-tools">
+    <div class="map-tool-btn" onclick="zoomIn()" title="Zoom +">
+        <img src="https://img.icons8.com/ios-filled/50/003366/plus-math.png">
+    </div>
+    <div class="map-tool-divider"></div>
+    <div class="map-tool-btn" onclick="zoomOut()" title="Zoom -">
+        <img src="https://img.icons8.com/ios-filled/50/003366/minus-math.png">
+    </div>
+    <div class="map-tool-divider"></div>
+    <div class="map-tool-btn" onclick="resetRotation()" title="Orienter vers le Nord">
+        <img src="https://img.icons8.com/ios-filled/50/003366/north-direction.png" id="compass-arrow" alt="Nord">
+    </div>
+</div>
+
+<!-- Header -->
+<header class="header-geomessen">
+    <div class="header-content">
+        <img src="https://cdn-icons-png.flaticon.com/128/854/854878.png" alt="Logo" class="site-logo">
+        <div class="brand-text">
+            <span class="brand-name">GÉOMESSEN</span>
+            <span class="brand-tagline">Solutions Géomatiques</span>
+        </div>
+    </div>
+</header>
+
+<!-- Overlay stats -->
+<div id="stats-overlay" onclick="fermerStats()"></div>
+
+<!-- Panneau statistiques -->
+<div id="stats-panel">
+    <div class="stats-handle"></div>
+    <div class="stats-title">Données statistiques des 7 derniers jours</div>
+
+    <div class="stats-kpi-row">
+        <div class="kpi-card">
+            <div class="kpi-value" id="kpi-visites">0</div>
+            <div class="kpi-label">Nombres de personnes qui ont visité</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-value" id="kpi-clics">0</div>
+            <div class="kpi-label">Nombres de clics sur le site</div>
+        </div>
+    </div>
+
+    <div class="chart-section">
+        <div class="chart-label">Nombres de visites par jour</div>
+        <div class="chart-wrapper">
+            <canvas id="chart-visites"></canvas>
+        </div>
+    </div>
+
+    <div class="stats-divider"></div>
+
+    <div class="chart-section">
+        <div class="chart-label">Clics par jour</div>
+        <div class="chart-wrapper-small">
+            <canvas id="chart-clics"></canvas>
+        </div>
+    </div>
+
+    <button class="stats-reset-btn" onclick="reinitialiserStats()">Réinitialiser les statistiques</button>
+</div>
+
+<!-- Carte -->
+<div id="carte"></div>
+
+<!-- FAB Couches -->
+<div class="fab-container fab-left" id="fabLayers">
+    <div class="fab-main" onclick="toggleMenu('fabLayers')" title="Fonds de carte">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/layers.png">
+    </div>
+    <div class="fab-secondary" onclick="ouvrirStats()" title="Statistiques">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#003366" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+    </div>
+    <div class="fab-options">
+        <div class="layer-card-fab active" data-layer="osm"><img src="https://i.pinimg.com/736x/a2/10/4c/a2104c0200fd4054aa9c1558c964d767.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="layer-card-fab" data-layer="sat"><img src="https://i.pinimg.com/736x/2c/46/32/2c4632af11d5aed27fa6d604aad871f6.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+    </div>
+</div>
+
+<!-- FAB Navigation -->
+<div class="fab-container fab-right" id="fabMenu">
+    <div class="fab-main" onclick="toggleMenu('fabMenu')">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/menu--v1.png">
+    </div>
+    <div class="fab-secondary" onclick="centerOnMe()" title="Ma position">
+        <img src="https://img.icons8.com/ios-filled/50/007AFF/center-direction.png">
+    </div>
+    <div class="fab-options">
+        <div class="transport-btn" id="btn-reset" style="background: #FF3B30;" title="Effacer"><img src="https://img.icons8.com/ios-filled/50/ffffff/trash.png" width="18"></div>
+        <div class="transport-btn" data-mode="wheelchair" title="Fauteuil roulant"><img src="https://img.icons8.com/ios-filled/50/003366/wheelchair.png" width="22"></div>
+        <div class="transport-btn" data-mode="public-transport" title="Transports en commun"><img src="https://img.icons8.com/ios-filled/50/003366/bus.png" width="22"></div>
+        <div class="transport-btn" data-mode="foot-walking" title="À pied"><img src="https://img.icons8.com/ios-filled/50/003366/walking.png" width="20"></div>
+        <div class="transport-btn" data-mode="moto" title="Moto"><img src="https://img.icons8.com/ios-filled/50/003366/motorcycle.png" width="24"></div>
+        <div class="transport-btn active" data-mode="driving-car" title="Voiture"><img src="https://img.icons8.com/ios-filled/50/003366/car.png" width="22"></div>
+    </div>
+</div>
+
+<!-- Barre de recherche -->
+<div class="search-container">
+    <div class="search-box">
+        <div class="search-main-row">
+            <div class="inputs-container">
+                <div class="input-group" id="start-group">
+                    <div class="dot start"></div>
+                    <div class="gps-row" id="gps-chip">
+                        <span class="gps-row-label" id="gps-chip-label">Localisation en cours...</span>
+                        <span class="gps-row-change" onclick="switchToManualStart()">Changer</span>
+                    </div>
+                    <input type="text" id="search-start" placeholder="Départ..." autocomplete="off" style="display:none;">
+                    <span class="clear-btn" id="clear-start" onclick="clearSearch('search-start')" style="display:none;">
+                        <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="1.5" y1="1.5" x2="8.5" y2="8.5" stroke="#003366" stroke-width="1.8" stroke-linecap="round"/>
+                            <line x1="8.5" y1="1.5" x2="1.5" y2="8.5" stroke="#003366" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </span>
+                </div>
+                <div class="search-divider"></div>
+                <div class="input-group">
+                    <div class="dot end"></div>
+                    <input type="text" id="search-end" placeholder="Arrivée..." autocomplete="off">
+                    <span class="clear-btn" onclick="clearSearch('search-end')">
+                        <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="1.5" y1="1.5" x2="8.5" y2="8.5" stroke="#003366" stroke-width="1.8" stroke-linecap="round"/>
+                            <line x1="8.5" y1="1.5" x2="1.5" y2="8.5" stroke="#003366" stroke-width="1.8" stroke-linecap="round"/>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <div class="btn-static" id="btn-voice" title="Parler"><img src="https://img.icons8.com/ios-filled/50/ffffff/microphone.png" width="18"></div>
+                <div class="btn-static" id="btn-reverse" title="Inverser"><img src="https://cdn-icons-png.flaticon.com/128/10520/10520486.png" width="20"></div>
+            </div>
+        </div>
+        <div id="search-results" class="results-list"></div>
+    </div>
+</div>
+
+<!-- Instructions -->
+<div class="instruction-container">
+    <div id="instructions">
+        <span style="color: #bbb; font-size: 13px;">Prêt pour la navigation...</span>
+    </div>
+</div>
+
+<div id="mode-compare-panel"></div>
+
+<!-- Panneau Transports en commun -->
+<div id="transit-overlay" onclick="fermerTransit()"></div>
+<div id="transit-panel">
+    <div class="transit-handle"></div>
+    <div class="transit-header">
+        <span class="transit-title">🚌 Transports en commun</span>
+        <span class="transit-close" onclick="fermerTransit()">✕</span>
+    </div>
+    <div id="transit-results">
+        <div class="transit-loading">Recherche des itinéraires...</div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer-credits">
+    <strong>GÉOMESSEN</strong> | Barry Hermès | Alternant Géomatique &bull; &copy; 2026
+</footer>
+
+<!-- Point d'entrée unique : tout le JS est dans les modules -->
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>

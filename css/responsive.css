@@ -1,0 +1,29 @@
+/* css/responsive.css
+   Media queries pour l'adaptation mobile / tablette / desktop
+   ─────────────────────────────────────────────────────────── */
+
+/* Tablette (>= 768px) */
+@media (min-width: 768px) {
+  .search-container {
+    max-width: 480px;
+  }
+
+  #instructions {
+    max-width: 400px;
+  }
+}
+
+/* Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+  .search-container {
+    max-width: 520px;
+    top: calc(90px + env(safe-area-inset-top));
+    left: 30px;
+    transform: none;
+  }
+
+  .fab-container.fab-right { right: 30px; }
+  .fab-container.fab-left  { left: 30px; }
+
+  #map-tools { top: 240px; left: 30px; }
+}
